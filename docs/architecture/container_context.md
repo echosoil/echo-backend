@@ -62,3 +62,4 @@ The ECHO Backend is a comprehensive software system designed for data handling, 
 ### Miscellaneous
 - **Usage Information:** Details on system usage.
 - **Login Service:** Manages user login and authentication.
+![Container context scheme](img/container_context1.png)

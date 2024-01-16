@@ -36,3 +36,4 @@ This document outlines the ECHO System, focusing on user interactions, system co
 ### Data Handling
 - **Send a Measurement with a File:** Users can send measurements along with files to the ECHO Backend through the ECHO UI.
 - **Get Metadata Information or Requested Dataset:** Users can obtain metadata information or request datasets via the ECHO UI.
+![System context scheme](img/system_context1.png)
