@@ -1,22 +1,26 @@
 # Import FastAPI
 from fastapi import FastAPI
-from pymongo import MongoClient
+from fastapi.middleware.cors import CORSMiddleware
+from api.routes.default_routes import default_route
+from api.routes.test_mongo_routes import test_route
+# from pymongo import MongoClient
 
-app = FastAPI()
+origins = [
+    "*", # Allow all origins
+]
 
-# Define a route
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+app = FastAPI(
+    title="FastAPI-Users-Backend", description = "CRUD API",
+    # root_path="/api"
+    )
 
-# Replace with your MongoDB credentials and hostname (use 'mongodb' as hostname if using Docker Compose)
-client = MongoClient("mongodb://mongouser:mongopassword@mongodb:27017/")
-db = client.test_db  # Replace 'test_db' with your database name
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/mongo_test")
-async def mongo_test():
-    # Performing a simple operation, e.g., inserting a document
-    db.test_collection.insert_one({"message": "Hello, MongoDB!"})
-    return {"message": "MongoDB connection successful!"}
-# Create an instance of the FastAPI class
-
+app.include_router(default_route)
+app.include_router(test_route)
