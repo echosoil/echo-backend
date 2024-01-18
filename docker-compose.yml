@@ -31,8 +31,22 @@ services:
       - 8089:8081
     networks:
       - backend
+
+  api:
+    container_name: api
+    image: python:3.9
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: bash -c "pip install -r requirements.txt && uvicorn api.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+    networks:
+      - backend
+
 networks:
   backend:
     name: backend
     driver: bridge
-
