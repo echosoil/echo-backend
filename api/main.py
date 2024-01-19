@@ -1,8 +1,10 @@
 # Import FastAPI
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from api.routes.default_routes import default_route
 from api.routes.test_mongo_routes import test_route
+from api.config.settings import settings
 # from pymongo import MongoClient
 
 origins = [
@@ -10,8 +12,7 @@ origins = [
 ]
 
 app = FastAPI(
-    title="FastAPI-Users-Backend", description = "CRUD API",
-    # root_path="/api"
+    title=settings.swagger_title, description = settings.swagger_description,
     )
 
 app.add_middleware(

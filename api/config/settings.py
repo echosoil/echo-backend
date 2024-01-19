@@ -1,18 +1,18 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
-    app_name: str = "ECHO API"
-    mongo_port: int = 27017
-    mongo_admin: str = "admin"
-    mongo_admin_password: str = "yourpassword"
-    mongo_host: str = "localhost"
+    swagger_title: str = "Defaull name"
+    swagger_description: str = "Default description"
+    mongo_initdb_root_username:str = "admin"
+    mongo_initdb_root_password: str = "1234"
     mode: str = "dev"
 
     @property
     def mongo_url(self) -> str:
-        return f'mongodb://{self.mongo_admin}:' + \
-            f'{self.mongo_admin_password}@{self.mongo_host}:' + \
-            f'{self.mongo_port}/?authMechanism=DEFAULT'
+        return f'mongodb://{self.mongo_initdb_root_username}:' + \
+            f'{self.mongo_initdb_root_password}' + \
+            '@mongodb:27017/?authMechanism=DEFAULT'
 
     class Config:
         env_file = ".env"
