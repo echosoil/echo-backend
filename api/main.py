@@ -2,10 +2,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routes.default_routes import default_route
-from api.routes.test_mongo_routes import test_route
-from api.config.settings import settings
-# from pymongo import MongoClient
+import api.routes as routes
+from api.config import settings
 
 origins = [
     "*", # Allow all origins
@@ -23,5 +21,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(default_route)
-app.include_router(test_route)
+app.include_router(routes.default_router, include_in_schema=False)
+app.include_router(routes.example_mongo_router, tags=["Mongo management"],
+                   prefix="/example_mongo")

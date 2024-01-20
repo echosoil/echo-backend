@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    swagger_title: str = "Defaull name"
+    swagger_title: str = "Default name"
     swagger_description: str = "Default description"
     mongo_initdb_root_username:str = "admin"
     mongo_initdb_root_password: str = "1234"

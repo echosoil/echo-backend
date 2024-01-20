@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from api.config.settings import settings
 
-default_route = APIRouter()
+from api.config import settings
 
+router = APIRouter()
 
-@default_route.get("/")
+@router.get("/")
 async def index():
-    return {"message": f"Hello, wellcome to {settings.app_name}"}
+    return {"message": f"Hello, wellcome to {settings.swagger_title}"}
