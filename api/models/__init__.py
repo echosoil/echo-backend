@@ -1,1 +1,1 @@
-from .example_mongo_models import *
+from .mongo_models import *
