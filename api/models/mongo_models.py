@@ -34,6 +34,16 @@ class UpdateData(BaseModel):
     name: Optional[str] = Field(None,
                                 example="John Doe",
                                 description="Your name")
+    description: Optional[str] = Field(None,
+                                       example="A description of you",
+                                       description="A description of you")
     age: Optional[int] = Field(None,
                                example=42,
                                description="Your age")
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "age": self.age
+        }

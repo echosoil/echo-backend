@@ -4,6 +4,7 @@ from typing import List
 from api.services.mongo_services import add_data, get_data, update_data, \
     delete_data, find_data
 from api.models import Data, DataInDB, UpdateData
+from api.schemas.mongo_schemas import data_collection, data_entity
 
 router = APIRouter()
 
@@ -17,9 +18,7 @@ router = APIRouter()
 async def get_router(
     search: str = Query(
         None,
-        description="Search for specific data. Use (*) as a wildcard " + \
-            "character to replace unknown characters or to search for a " + \
-            "partial match."),
+        description="Search for specific data."),
     limit: int = Query(
         10,
         description="Limit the number of results returned.")):
@@ -27,6 +26,7 @@ async def get_router(
     Retrieve some information from the MongoDB.
     """
     return await find_data(search, limit)
+    
 
 
 @router.get("/{id}",
@@ -48,7 +48,7 @@ async def get_id_router(id: str = Path(...,
     data = await get_data(id)
     if not data:
         raise HTTPException(status_code=404, detail="Data not found.")
-    return data
+    return data_entity(data)
 
 
 @router.post("",

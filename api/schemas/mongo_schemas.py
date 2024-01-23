@@ -20,3 +20,20 @@ def data_entity(item):
         "created": str(item['created']),
         "modified": str(item['modified'])
     }
+
+
+def data_collection(data):
+    """
+    Serialize data collection.
+
+    Parameters
+    ----------
+    data : list
+        Data collection.
+
+    Returns
+    -------
+    list
+        Serialized data collection.
+    """
+    return [data_entity(item) for item in data]
