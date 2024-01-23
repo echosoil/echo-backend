@@ -4,7 +4,8 @@ from typing import List
 from api.services.mongo_services import add_data, get_data, update_data, \
     delete_data, find_data
 from api.models import Data, DataInDB, UpdateData
-from api.schemas.mongo_schemas import data_collection, data_entity
+from api.schemas.mongo_schemas import data_entity
+from api.routes.decorators import count_route_usage
 
 router = APIRouter()
 
@@ -15,6 +16,7 @@ router = APIRouter()
             response_model=List[DataInDB],
             
             )
+@count_route_usage("get_router")
 async def get_router(
     search: str = Query(
         None,
@@ -39,6 +41,7 @@ async def get_router(
                     "description": "Data not found."
                 }
             })
+@count_route_usage("get_id_router")
 async def get_id_router(id: str = Path(...,
                         description="The unique identifier of the data.")):
     """
@@ -56,6 +59,7 @@ async def get_id_router(id: str = Path(...,
              description="Store some information from the MongoDB.",
              response_model=DataInDB,
              status_code=201)
+@count_route_usage("post_router")
 async def post_router(data: Data):
     """
     Store some information from the MongoDB.
@@ -69,6 +73,7 @@ async def post_router(data: Data):
             summary="Store some information from the MongoDB.",
             description="Store some information from the MongoDB.",
             status_code=204)
+@count_route_usage("put_router")
 async def put_router(data_to_update: UpdateData,
                      id: str = Path(...,
                         description="The unique identifier of the data.")):
@@ -87,6 +92,7 @@ async def put_router(data_to_update: UpdateData,
                summary="Delete some information from the MongoDB.",
                description="Delete some information from the MongoDB.",
                status_code=204)
+@count_route_usage("delete_router")
 async def delete_router(id: str = Path(...,
                         description="The unique identifier of the data.")):
     """
