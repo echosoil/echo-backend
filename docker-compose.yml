@@ -46,6 +46,21 @@ services:
     networks:
       - backend
 
+  minio:
+    container_name: minio
+    image: minio/minio
+    volumes:
+      - ./minio-data:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - backend
+
 networks:
   backend:
     name: backend
