@@ -24,3 +24,4 @@ app.add_middleware(
 app.include_router(routes.default_router, include_in_schema=False)
 app.include_router(routes.example_mongo_router, tags=["Mongo management"],
                    prefix="/example_mongo")
+app.include_router(routes.stats_router, tags=["Statistics"], prefix="/stats")
