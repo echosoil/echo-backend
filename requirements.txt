@@ -3,3 +3,5 @@ uvicorn[standard]
 pymongo
 pydantic_settings
 ckanext-dcat
+minio
+python-multipart

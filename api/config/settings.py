@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     mongo_initdb_root_username:str = "admin"
     mongo_initdb_root_password: str = "1234"
     mode: str = "dev"
+    minio_root_user: str = "admin"
+    minio_root_password: str = "1234"
 
     @property
     def mongo_url(self) -> str:
