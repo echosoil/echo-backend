@@ -16,7 +16,7 @@ router = APIRouter()
             response_model=List[DataInDB],
             
             )
-@count_route_usage("get_router")
+@count_route_usage("get_mongo")
 async def get_router(
     search: str = Query(
         None,
@@ -41,7 +41,7 @@ async def get_router(
                     "description": "Data not found."
                 }
             })
-@count_route_usage("get_id_router")
+@count_route_usage("get_id_mongo")
 async def get_id_router(id: str = Path(...,
                         description="The unique identifier of the data.")):
     """
@@ -59,7 +59,7 @@ async def get_id_router(id: str = Path(...,
              description="Store some information from the MongoDB.",
              response_model=DataInDB,
              status_code=201)
-@count_route_usage("post_router")
+@count_route_usage("post_mongo")
 async def post_router(data: Data):
     """
     Store some information from the MongoDB.
@@ -73,7 +73,7 @@ async def post_router(data: Data):
             summary="Store some information from the MongoDB.",
             description="Store some information from the MongoDB.",
             status_code=204)
-@count_route_usage("put_router")
+@count_route_usage("put_mongo")
 async def put_router(data_to_update: UpdateData,
                      id: str = Path(...,
                         description="The unique identifier of the data.")):
@@ -92,7 +92,7 @@ async def put_router(data_to_update: UpdateData,
                summary="Delete some information from the MongoDB.",
                description="Delete some information from the MongoDB.",
                status_code=204)
-@count_route_usage("delete_router")
+@count_route_usage("delete_mongo")
 async def delete_router(id: str = Path(...,
                         description="The unique identifier of the data.")):
     """

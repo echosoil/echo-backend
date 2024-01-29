@@ -4,7 +4,7 @@ from minio.error import S3Error
 
 from api.config.s3 import storageClient
 from api.services.minio_services import get_buckets, get_object_list, \
-    add_bucket, get_object, add_object
+    add_bucket, get_object, add_object, delete_bucket, delete_object
 from api.routes.decorators import count_route_usage
 
 
@@ -139,3 +139,56 @@ async def list_files(bucket: str = Path(
         if objects == "Bucket does not exist":
             raise HTTPException(status_code=404, detail=objects)
         raise HTTPException(status_code=500, detail=objects)
+
+
+@router.delete("/{bucket}",
+                summary="Delete a bucket in the MinIO storage.",
+                description="Delete a bucket in the MinIO storage.",
+                status_code=204,
+                responses={
+                     404: {
+                          "description": "Bucket does not exist."
+                     },
+                     500: {
+                          "description": "Internal server error."
+                     }
+                })
+@count_route_usage("DELETE /bucket", dynamic_path="bucket")
+async def delete_bucket_router(bucket: str = Path(
+    ..., description="The name of the bucket.")):
+    """
+    Delete a bucket in the MinIO storage.
+    """
+    status, message = await delete_bucket(bucket)
+    if status:
+        return None
+    else:
+        if message == f"Bucket '{bucket}' does not exist.":
+            raise HTTPException(status_code=404, detail=message)
+        raise HTTPException(status_code=500, detail=message)
+    
+    
+@router.delete("/{bucket}/{file_name}",
+                summary="Delete a file in the MinIO storage.",
+                description="Delete a file in the MinIO storage.",
+                status_code=204,
+                responses={
+                     404: {
+                          "description": "File does not exist."
+                     },
+                     500: {
+                          "description": "Internal server error."
+                     }
+                })
+@count_route_usage("DELETE /bucket/file", dynamic_path="bucket")
+async def delete_file(bucket: str, file_name: str):
+    """
+    Delete a file in the MinIO storage.
+    """
+    status, message = await delete_object(bucket, file_name)
+    if status:
+        return None
+    else:
+        if message == "Object does not exist.":
+            raise HTTPException(status_code=404, detail=message)
+        raise HTTPException(status_code=500, detail=message)
