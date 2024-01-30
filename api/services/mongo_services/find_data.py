@@ -5,9 +5,28 @@ from api.config import db
 from api.schemas.mongo_schemas import data_collection
 
 
-async def find_data(search=None, limit=10):
+async def find_data(search=None, limit=10, sort="asc"):
+    """
+    Find data in mongo database.
+    
+    Parameters
+    ----------
+    search : str
+        Search for specific data.
+    limit : int
+        Limit the number of results returned.
+    sort : SortOrder
+        Sort the results in ascending (asc) or descending (desc) order.
+        
+    Returns
+    -------
+    list
+        Data collection.
+    """
+    sort_order = 1 if sort == "asc" else -1
+
     if search is None:
-        result = db.data.find().limit(limit)
+        result = db.data.find().sort("modified", sort_order).limit(limit)
     else:
         query_conditions = [
             {"name": {"$regex": regex.Regex(search)}},
@@ -27,6 +46,7 @@ async def find_data(search=None, limit=10):
         if ObjectId.is_valid(search):
             query_conditions.append({"_id": ObjectId(search)})
         
-        result = db.data.find({"$or": query_conditions}).limit(limit)
+        result = db.data.find(
+            {"$or": query_conditions}).sort("modified", sort_order).limit(limit)
 
     return data_collection(result)

@@ -1,5 +1,17 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
+
+
+class File(BaseModel):
+    bucket: str = Field(..., example="my_bucket", description="The bucket name")
+    file: str = Field(..., example="my_file.txt", description="The object name")
+    
+    def to_dict(self):
+        return {
+            "bucket": self.bucket,
+            "file": self.file
+        }
+
 
 class Data(BaseModel):
     name: str = Field(..., # ... means required
@@ -11,12 +23,14 @@ class Data(BaseModel):
     age: Optional[int] = Field(None,
                                example=42,
                                description="Your age")
+    files: Optional[List[File]] = Field(None, description="List of files")
 
     def to_dict(self):
         return {
             "name": self.name,
             "description": self.description,
-            "age": self.age
+            "age": self.age,
+            "files": [file.model_dump() for file in self.files] if self.files else None
         }
 
 class DataInDB(Data):
@@ -40,10 +54,12 @@ class UpdateData(BaseModel):
     age: Optional[int] = Field(None,
                                example=42,
                                description="Your age")
+    files: Optional[List[File]] = Field(None, description="List of files")
 
     def to_dict(self):
         return {
             "name": self.name,
             "description": self.description,
-            "age": self.age
+            "age": self.age,
+            "files": [file.model_dump() for file in self.files] if self.files else None
         }

@@ -5,3 +5,4 @@ pydantic_settings
 ckanext-dcat
 minio
 python-multipart
+pytest

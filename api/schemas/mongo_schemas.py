@@ -17,6 +17,7 @@ def data_entity(item):
         "name": str(item['name']),
         "age": int(item['age']) if item.get('age') is not None else 0,
         "description": str(item['description']),
+        "files": item.get('files', []),
         "created": str(item['created']),
         "modified": str(item['modified'])
     }
