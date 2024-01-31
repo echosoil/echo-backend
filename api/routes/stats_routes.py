@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from typing import List, Dict, Any
 
-from api.config.db import db
+
+from api.services.stats_services import get_route_counter, delete_route_counter
 
 router = APIRouter()
 
@@ -13,10 +14,28 @@ async def get_route_usage():
     """
     Retrieve the usage count of all routes.
     """
-    route_usage_data = db.route_counts.find()
-    # Delete the _id field from the response
-    response = []
-    for route in route_usage_data:
-        del route["_id"]
-        response.append(route)
-    return response
+    status, response = await get_route_counter()
+    if status:
+        return response
+    else:
+        return HTTPException(status_code=500, detail=response)
+
+
+@router.delete("/",
+                summary="Delete all documents in the route_counter collection.",
+                description="Delete all documents in the route_counter collection.",
+                status_code=204,
+                responses={
+                     500: {
+                          "description": "Internal server error."
+                     }
+                })
+async def delete_route_usage():
+    """
+    Delete all documents in the route_counter collection.
+    """
+    status = await delete_route_counter()
+    if status:
+        return "Route counter collection deleted successfully."
+    else:
+        raise HTTPException(status_code=500, detail="Internal server error.")
