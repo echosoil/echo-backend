@@ -4,10 +4,13 @@ from datetime import datetime
 
 from api.config import db
 from api.schemas.mongo_schemas import data_entity
+from api.services.utils.date_to_str import date_to_str
+
 
 async def delete_file_from_data(data_id, bucket, file_name):
     """
-    Remove a file from the 'files' list in a Data document in MongoDB, and update the 'modified' field.
+    Remove a file from the 'files' list in a Data document in MongoDB, and
+    update the 'modified' field.
     
     Parameters
     ----------
@@ -31,12 +34,13 @@ async def delete_file_from_data(data_id, bucket, file_name):
     # Current date and time
     current_time = datetime.utcnow()
 
-    # Update the document by removing the specified file from the files list and updating the modified field
+    # Update the document by removing the specified file from the files list
+    # and updating the modified field
     updated_data = db.data.find_one_and_update(
         {"_id": data_id},
         {
             "$pull": {"files": {"bucket": bucket, "file": file_name}},
-            "$set": {"modified": current_time}
+            "$set": {"modified": date_to_str(current_time)}
         },
         return_document=ReturnDocument.AFTER
     )
@@ -46,5 +50,6 @@ async def delete_file_from_data(data_id, bucket, file_name):
         return data_entity(updated_data)
     else:
         # Handle the case where the document is not found
-        # You might raise an exception or handle it in another way according to your business logic
+        # You might raise an exception or handle it in another way according
+        # to your business logic
         return None

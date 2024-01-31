@@ -3,6 +3,7 @@ from typing import List
 
 from api.services.mongo_services import add_data, get_data, update_data, \
     delete_data, find_data, add_file_to_data, delete_file_from_data
+from api.services.minio_services import check_object
 from api.models import Data, DataInDB, UpdateData, File
 from api.schemas.mongo_schemas import data_entity
 from api.routes.decorators import count_route_usage
@@ -22,7 +23,7 @@ router = APIRouter()
             response_model=List[DataInDB],
             
             )
-@count_route_usage("get_mongo")
+@count_route_usage("GET /mongo/")
 async def get_mongo(
     search: str = Query(
         None,
@@ -51,7 +52,7 @@ async def get_mongo(
                     "description": "Data not found."
                 }
             })
-@count_route_usage("get_id_mongo")
+@count_route_usage("GET /mongo", dynamic_path="id")
 async def get_id_mongo(id: str = Path(...,
                         description="The unique identifier of the data.")):
     """
@@ -68,12 +69,24 @@ async def get_id_mongo(id: str = Path(...,
              summary="Store some information from the MongoDB.",
              description="Store some information from the MongoDB.",
              response_model=DataInDB,
-             status_code=201)
-@count_route_usage("post_mongo")
+             status_code=201,
+             responses={
+                404: {
+                    "description": "File not found."
+                }
+             })
+@count_route_usage("POST /mongo/")
 async def post_mongo(data: Data):
     """
     Store some information from the MongoDB.
     """
+    # First, check if data has files.
+    data_info = data.to_dict()
+    if "files" in data_info:
+        # Check if the files are valid.
+        for file in data_info["files"]:
+            if not await check_object(file["bucket"], file["file"]):
+                raise HTTPException(status_code=404, detail="File not found.")
     new_data = await add_data(data)
     return new_data
 
@@ -82,7 +95,7 @@ async def post_mongo(data: Data):
             summary="Store some information from the MongoDB.",
             description="Store some information from the MongoDB.",
             status_code=204)
-@count_route_usage("put_mongo")
+@count_route_usage("PUT /mongo/", dynamic_path="id")
 async def put_mongo(data_to_update: UpdateData,
                      id: str = Path(...,
                         description="The unique identifier of the data.")):
@@ -93,6 +106,13 @@ async def put_mongo(data_to_update: UpdateData,
     data = await get_data(id)
     if not data:
         raise HTTPException(status_code=404, detail="Data not found.")
+    # Check if data has files.
+    data_info = data_to_update.to_dict()
+    if "files" in data_info:
+        # Check if the files are valid.
+        for file in data_info["files"]:
+            if not await check_object(file["bucket"], file["file"]):
+                raise HTTPException(status_code=404, detail="File not found.")
     await update_data(id, data_to_update)
     return None
 
@@ -101,7 +121,7 @@ async def put_mongo(data_to_update: UpdateData,
                summary="Delete some information from the MongoDB.",
                description="Delete some information from the MongoDB.",
                status_code=204)
-@count_route_usage("delete_mongo")
+@count_route_usage("DELETE /mongo/", dynamic_path="id")
 async def delete_mongo(id: str = Path(...,
                         description="The unique identifier of the data.")):
     """
@@ -115,11 +135,16 @@ async def delete_mongo(id: str = Path(...,
     return None
 
 
-@router.put("/{id}/add-file",
+@router.put("/{id}/file",
             summary="Add a file to the files list of a MongoDB document.",
             description="Add a file to the files list of a MongoDB document.",
-            status_code=204)
-@count_route_usage("put_add_file_mongo")
+            status_code=204,
+            responses={
+                404: {
+                    "description": "Data or file not found."
+                }
+            })
+@count_route_usage("PUT /mongo/file", dynamic_path="id")
 async def add_file_mongo(id: str = Path(..., description="The unique identifier of the data."),
                          file_info: File = Body(..., description="The file to add.")):
     """
@@ -129,26 +154,32 @@ async def add_file_mongo(id: str = Path(..., description="The unique identifier 
     data = await get_data(id)
     if not data:
         raise HTTPException(status_code=404, detail="Data not found.")
-    
+    # Check if the file is valid.
+    file_dict = file_info.to_dict()
+    if not await check_object(file_dict["bucket"], file_dict["file"]):
+        raise HTTPException(status_code=404, detail="File not found.")
     await add_file_to_data(id, file_info)
     return None
 
 
-# @router.delete("/{id}/file/{bucket}/{file}",
-#                summary="Remove a file from the files list of a MongoDB document.",
-#                description="Remove a file from the files list of a MongoDB document.",
-#                status_code=204)
-# @count_route_usage("delete_file_mongo")
-# async def remove_file_mongo(id: str = Path(..., description="The unique identifier of the data."),
-#                             bucket: str = Query(..., description="The bucket of the file to remove."),
-#                             file: str = Query(..., description="The name of the file to remove.")):
-#     """
-#     Remove a file from the files list of a MongoDB document.
-#     """
-#     # First, check if the data exists.
-#     data = await get_data(id)
-#     if not data:
-#         raise HTTPException(status_code=404, detail="Data not found.")
+@router.delete("/{id}/file/{bucket}/{file}",
+               summary="Remove a file from the files list of a MongoDB document.",
+               description="Remove a file from the files list of a MongoDB document.",
+               status_code=204)
+@count_route_usage("DELETE /mongo/file", dynamic_path="id")
+async def remove_file_mongo(id: str = Path(...,
+                                           description="The unique identifier of the data."),
+                            bucket: str = Path(...,
+                                               description="The bucket of the file to remove."),
+                            file: str = Path(...,
+                                             description="The name of the file to remove.")):
+    """
+    Remove a file from the files list of a MongoDB document.
+    """
+    # First, check if the data exists.
+    data = await get_data(id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Data not found.")
     
-#     await delete_file_from_data(id, bucket, file)
-#     return None
+    await delete_file_from_data(id, bucket, file)
+    return None

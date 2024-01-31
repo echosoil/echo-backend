@@ -1,8 +1,6 @@
 import io
 from fastapi import APIRouter, File, UploadFile, HTTPException, Path
-from minio.error import S3Error
 
-from api.config.s3 import storageClient
 from api.services.minio_services import get_buckets, get_object_list, \
     add_bucket, get_object, add_object, delete_bucket, delete_object
 from api.routes.decorators import count_route_usage
@@ -79,7 +77,7 @@ async def download_file(bucket: str, file_name: str):
                      "description": "Internal server error."
                  }
              })
-@count_route_usage("POST /buckets/", dynamic_path="bucket")
+@count_route_usage("POST minio/buckets/", dynamic_path="bucket")
 async def create_bucket(bucket: str = Path(
     ..., description="The name of the bucket.")):
     """
@@ -105,7 +103,7 @@ async def create_bucket(bucket: str = Path(
                     "description": "Internal server error."
                 }
             })
-@count_route_usage("GET /buckets/")
+@count_route_usage("GET minio/buckets/")
 async def list_buckets():
     """
     List all buckets in the MinIO storage.
@@ -129,7 +127,7 @@ async def list_buckets():
                     "description": "Internal server error."
                 }
             })
-@count_route_usage("GET /bucket", dynamic_path="bucket")
+@count_route_usage("GET minio/bucket", dynamic_path="bucket")
 async def list_files(bucket: str = Path(
     ..., description="The name of the bucket.")):
     status, objects = await get_object_list(bucket)
@@ -153,7 +151,7 @@ async def list_files(bucket: str = Path(
                           "description": "Internal server error."
                      }
                 })
-@count_route_usage("DELETE /bucket", dynamic_path="bucket")
+@count_route_usage("DELETE minio/", dynamic_path="bucket")
 async def delete_bucket_router(bucket: str = Path(
     ..., description="The name of the bucket.")):
     """
@@ -180,7 +178,7 @@ async def delete_bucket_router(bucket: str = Path(
                           "description": "Internal server error."
                      }
                 })
-@count_route_usage("DELETE /bucket/file", dynamic_path="bucket")
+@count_route_usage("DELETE minio/", dynamic_path="bucket")
 async def delete_file(bucket: str, file_name: str):
     """
     Delete a file in the MinIO storage.
