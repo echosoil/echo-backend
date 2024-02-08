@@ -63,6 +63,36 @@ def get_dataset_details(ckan_url, api_key, dataset_name):
     else:
         return None
 
+# Search in DataStore use. 
+# Replace these variables with actual values
+# RESOURSE_ID = 11111
+# ckan_instance_url = "http://localhost:8443/api/3/action/datastore_search"
+# resource_id = f"{RESOURCE_ID}"  # Resource ID to query
+# search_term = "search_term"  # Optional: for full-text search queries
+
+# # Setting up the parameters for the request
+# params = {
+#     "resource_id": resource_id,
+#     "q": search_term  # You can remove this line if you don't want a full-text search
+# }
+
+# # Sending the GET request to the CKAN datastore_search endpoint
+# response = requests.get(ckan_instance_url, params=params)
+
+# # Checking if the request was successful
+# if response.status_code == 200:
+#     data = response.json()  # Parsing the response JSON
+#     if data.get("success", False):
+#         records = data["result"]["records"]
+#         total = data["result"]["total"]
+#         print(f"Total records found: {total}")
+#         for record in records:
+#             print(json.dumps(record, indent=2))  # Print each record as formatted JSON
+#     else:
+#         print("Search was not successful. Please check your query parameters.")
+# else:
+#     print(f"Failed to fetch data. Status code: {response.status_code}")
+
     
 response = requests.get(f"{CKAN_URL}/api/3/action/organization_list", verify=IS_CERT)
 organizations = response.json()["result"]

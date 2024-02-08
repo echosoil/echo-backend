@@ -21,6 +21,7 @@ router = APIRouter()
                      "description": "Internal server error."
                  }
              })
+@count_route_usage("POST minio/{bucket}", dynamic_paths=[("bucket", "bucket")])
 async def upload_file(
     bucket: str = Path(..., description="he name of the bucket."),
     file: UploadFile = File(...)):
@@ -52,6 +53,7 @@ async def upload_file(
                     "description": "Internal server error."
                 }
             })
+@count_route_usage("GET minio/{bucket}/{file_name}", dynamic_paths=[("bucket", "bucket")])
 async def download_file(bucket: str, file_name: str):
     """
     Download a file from the MinIO storage.
@@ -77,7 +79,7 @@ async def download_file(bucket: str, file_name: str):
                      "description": "Internal server error."
                  }
              })
-@count_route_usage("POST minio/buckets/", dynamic_path="bucket")
+@count_route_usage("POST minio/buckets/{bucket}", dynamic_paths=[("bucket", "bucket")])
 async def create_bucket(bucket: str = Path(
     ..., description="The name of the bucket.")):
     """
@@ -127,7 +129,7 @@ async def list_buckets():
                     "description": "Internal server error."
                 }
             })
-@count_route_usage("GET minio/bucket", dynamic_path="bucket")
+@count_route_usage("GET minio/{bucket}", dynamic_paths=[("bucket", "bucket")])
 async def list_files(bucket: str = Path(
     ..., description="The name of the bucket.")):
     status, objects = await get_object_list(bucket)
@@ -151,7 +153,7 @@ async def list_files(bucket: str = Path(
                           "description": "Internal server error."
                      }
                 })
-@count_route_usage("DELETE minio/", dynamic_path="bucket")
+@count_route_usage("DELETE minio/{bucket}", dynamic_paths=[("bucket", "bucket")])
 async def delete_bucket_router(bucket: str = Path(
     ..., description="The name of the bucket.")):
     """
@@ -164,8 +166,8 @@ async def delete_bucket_router(bucket: str = Path(
         if message == f"Bucket '{bucket}' does not exist.":
             raise HTTPException(status_code=404, detail=message)
         raise HTTPException(status_code=500, detail=message)
-    
-    
+
+
 @router.delete("/{bucket}/{file_name}",
                 summary="Delete a file in the MinIO storage.",
                 description="Delete a file in the MinIO storage.",
@@ -178,7 +180,8 @@ async def delete_bucket_router(bucket: str = Path(
                           "description": "Internal server error."
                      }
                 })
-@count_route_usage("DELETE minio/", dynamic_path="bucket")
+@count_route_usage("DELETE minio/{bucket}/{file_name}",
+                    dynamic_paths=[("bucket", "bucket"), ("file_name", "file_name")])
 async def delete_file(bucket: str, file_name: str):
     """
     Delete a file in the MinIO storage.

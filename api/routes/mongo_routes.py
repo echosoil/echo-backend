@@ -52,7 +52,7 @@ async def get_mongo(
                     "description": "Data not found."
                 }
             })
-@count_route_usage("GET /mongo", dynamic_path="id")
+@count_route_usage("GET /mongo/{id}", dynamic_paths=[("id", "id")])
 async def get_id_mongo(id: str = Path(...,
                         description="The unique identifier of the data.")):
     """
@@ -95,7 +95,7 @@ async def post_mongo(data: Data):
             summary="Store some information from the MongoDB.",
             description="Store some information from the MongoDB.",
             status_code=204)
-@count_route_usage("PUT /mongo/", dynamic_path="id")
+@count_route_usage("PUT /mongo/{id}", dynamic_paths=[("id", "id")])
 async def put_mongo(data_to_update: UpdateData,
                      id: str = Path(...,
                         description="The unique identifier of the data.")):
@@ -121,7 +121,7 @@ async def put_mongo(data_to_update: UpdateData,
                summary="Delete some information from the MongoDB.",
                description="Delete some information from the MongoDB.",
                status_code=204)
-@count_route_usage("DELETE /mongo/", dynamic_path="id")
+@count_route_usage("DELETE /mongo/{id}", dynamic_paths=[("id", "id")])
 async def delete_mongo(id: str = Path(...,
                         description="The unique identifier of the data.")):
     """
@@ -144,7 +144,7 @@ async def delete_mongo(id: str = Path(...,
                     "description": "Data or file not found."
                 }
             })
-@count_route_usage("PUT /mongo/file", dynamic_path="id")
+@count_route_usage("PUT /mongo/{id}/file", dynamic_paths=[("id", "id")])
 async def add_file_mongo(id: str = Path(..., description="The unique identifier of the data."),
                          file_info: File = Body(..., description="The file to add.")):
     """
@@ -166,7 +166,11 @@ async def add_file_mongo(id: str = Path(..., description="The unique identifier 
                summary="Remove a file from the files list of a MongoDB document.",
                description="Remove a file from the files list of a MongoDB document.",
                status_code=204)
-@count_route_usage("DELETE /mongo/file", dynamic_path="id")
+@count_route_usage("DELETE /mongo/{id}/file/{bucket}/{file}",
+                   dynamic_paths=[
+                       ("id", "id"),
+                       ("bucket", "bucket"),
+                       ("file", "file")])
 async def remove_file_mongo(id: str = Path(...,
                                            description="The unique identifier of the data."),
                             bucket: str = Path(...,
