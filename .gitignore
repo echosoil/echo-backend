@@ -3,3 +3,7 @@ api/__pycache__/
 *.pyc
 mongodb-data
 minio-data
+ports.conf
+.env
+ckan-docker-2/
+test_ckan/
