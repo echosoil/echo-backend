@@ -31,7 +31,6 @@ services:
       - dbnet
       - solrnet
       - redisnet
-      - ckannet_ext
     env_file:
       - .env
     depends_on:
@@ -108,5 +107,3 @@ networks:
     internal: true
   redisnet:
     internal: true
-  ckannet_ext:
-    external: true

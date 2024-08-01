@@ -18,7 +18,7 @@ services:
       ckan:
         condition: service_healthy
     ports:
-      - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
+      - "0.0.0.0:8080:8443"  # Expose port 8080 on the host to port 8443 on the container
     
   ckan:
     build:
@@ -31,7 +31,6 @@ services:
       - dbnet
       - solrnet
       - redisnet
-      - ckannet_ext
     env_file:
       - .env
     depends_on:
@@ -108,5 +107,3 @@ networks:
     internal: true
   redisnet:
     internal: true
-  ckannet_ext:
-    external: true

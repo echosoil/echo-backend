@@ -6,3 +6,4 @@ ckanext-dcat
 minio
 python-multipart
 pytest
+ckanapi
