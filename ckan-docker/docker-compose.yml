@@ -6,6 +6,25 @@ volumes:
   site_packages:
 
 services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.1
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    volumes:
+      - /home/quanta/keycloak-data:/opt/keycloak/data
+    ports:
+      - "8080:8080"
+    command: start-dev
+
+  minio:
+    image: quay.io/minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - /home/quanta/podman-data:/data
+    command: server /data --console-address ":9001"
 
   nginx:
     build:
