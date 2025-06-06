@@ -6,6 +6,15 @@ volumes:
   site_packages:
 
 services:
+  blazegraph:
+    image: lyrasis/blazegraph:2.1.5
+    container_name: blazegraph
+    ports:
+      - "8889:8081"  # Maps port 8889 on your machine to 8082 inside the container
+    volumes:
+      - /home/quanta/blazegraph_data:/data  # Volume for persisting Blazegraph data
+    restart: unless-stopped  # Automatically restart unless manually stopped
+
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.1
     environment:
